@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FD PLC</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0-beta.2"></script>
+    <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href={{ url_for ('static', filename="charts.css")}}>
+    <link rel="stylesheet" href={{ url_for ('static', filename="overview.css")}}>
+</head>
+<body>
+    <div class="header">
+        <a href="#default" class="logo"><img src="https://static1.squarespace.com/static/56cb97860442621c56ea6559/t/5bcf4d81e2c483f1f95040f9/1615317812552/?format=1500w" style="width:175px;height:25px;"></a>
+        <div class="header-right">
+          <a class="active" href="#home">Overview</a>
+          <a href="drying.html">Drying Cycle</a>
+        </div>
+    </div>
+    <div>
+        <div class="chart-container">
+            <canvas id="flowrateChart" ></canvas>
+            <canvas id="pressureChart"></canvas>
+            <canvas id="humidityChart"></canvas>
+        </div>
+        <div class="data">
+            <h2 id='flowrateSP'>flowratesp</h2>
+            <h2 id='flowrate'>flowrate</h2>
+            <h2 id='flowrateUnits'>SLPM</h2>
+            <h2 id='pressure1'>pressure1</h2>
+            <h2 id='internal'>External</h2>
+            <h2 id='pressure2'>pressure2</h2>
+            <h2 id='external'>Internal</h2>
+            <h2 id='pressureUnits'>PSI</h2>
+            <h2 id='humiditySP'>humiditysp</h2>
+            <h2 id='humidity'>humidity</h2>
+            <h2 id='humidityUnits'>% RH</h2>
+        </div>
+        
+        <div class="submitForms">
+            <input type='text' id='flowrateSent'>
+            <input type='text' id='rhSent'>
+        </div>
+        <button onclick="exportToCsv()">export to CSV</button>
+        <script>
+            $(document).ready(function(){
+                $("#flowrateSent").keypress(function(e) {
+                    if (e.which == 13) {
+                        var flowrates= document.getElementById("flowrateSent");
+                        var entry = {
+                            flowrates: flowrates.value
+                        };
+                        fetch(`${window.origin}/flowrateSend`, {
+                            method: "POST",
+                            credentials: "include",
+                            body: JSON.stringify(entry),
+                            cache: "no-cache",
+                            headers: new Headers({
+                                "content-type":"application/json"
+                            })
+                        })
+                        console.log(entry);
+                    } 
+                    
+                });
+            });
+        </script>
+        <script>
+            $(document).ready(function(){
+                $("#rhSent").keypress(function(e) {
+                    if (e.which == 13) {
+                        var rh= document.getElementById("rhSent");
+                        var entry2 = {
+                            rh: rh.value
+                        };
+                        fetch(`${window.origin}/rhSend`, {
+                            method: "POST",
+                            credentials: "include",
+                            body: JSON.stringify(entry2),
+                            cache: "no-cache",
+                            headers: new Headers({
+                                "content-type":"application/json"
+                            })
+                        })
+                        console.log(entry2);
+                    } 
+                    
+                });
+            });
+        </script>
+        
+        
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>    
+    <script src="{{ url_for ('static', filename='overview.js')}}"></script>  
+</body>
